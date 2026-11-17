@@ -150,6 +150,8 @@ h1{font-size:clamp(31px,7vw,48px);font-weight:normal;line-height:1.12;margin:12p
    <span class="signature">From your well-wisher,<br><strong>Chaitanya</strong> 🤗</span></p>
  </section>
  <button class="reset" id="reset" type="button">Read the letter again ↻</button>
+<button class="reset" id="musicToggle" type="button" aria-pressed="false">♫ Play music</button>
+<audio id="bgMusic" src="dilruba-audio.mp3" preload="auto" loop></audio>
  <div class="footer">A little kindness, folded into a letter. ✨</div>
 </main>
 <script>
@@ -157,6 +159,9 @@ const envelope=document.getElementById('envelope');
 const message=document.getElementById('message');
 const note=document.getElementById('tapNote');
 const reset=document.getElementById('reset');
+const music=document.getElementById('bgMusic');
+const musicToggle=document.getElementById('musicToggle');
+music.volume=0.35;
 let opened=false;
 function openLetter(){
  if(opened)return;
@@ -168,17 +173,23 @@ function openLetter(){
    note.textContent='💗 A LITTLE NOTE, JUST FOR YOU';
    reset.classList.add('show');
    message.scrollIntoView({behavior:'smooth',block:'nearest'});
+   music.play().then(()=>{musicToggle.classList.add('show');musicToggle.textContent='♫ Music on · Tap to pause';musicToggle.setAttribute('aria-pressed','true');}).catch(()=>{musicToggle.classList.add('show');musicToggle.textContent='♫ Play music';});
  },1050);
 }
 envelope.addEventListener('click',openLetter);
 envelope.addEventListener('keydown',e=>{
  if(e.key==='Enter'||e.key===' '){e.preventDefault();openLetter();}
 });
+musicToggle.addEventListener('click',()=>{
+ if(music.paused){music.play().then(()=>{musicToggle.textContent='♫ Music on · Tap to pause';musicToggle.setAttribute('aria-pressed','true');}).catch(()=>{});}
+ else{music.pause();musicToggle.textContent='♫ Play music';musicToggle.setAttribute('aria-pressed','false');}
+});
 reset.addEventListener('click',()=>{
  opened=false;
  envelope.classList.remove('open');
  message.classList.remove('show');
  reset.classList.remove('show');
+ music.pause();music.currentTime=0;musicToggle.classList.remove('show');musicToggle.textContent='♫ Play music';musicToggle.setAttribute('aria-pressed','false');
  note.textContent='💌 TAP THE ENVELOPE TO OPEN';
  window.scrollTo({top:0,behavior:'smooth'});
 });
